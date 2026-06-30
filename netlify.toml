@@ -1,7 +1,36 @@
+# =====================================================================
+# Netlify configuration — APRÈS static campaign site
+# Publishes ONLY the /site directory. No Node, npm, Vite, React, or
+# TanStack build is involved. The old application source in /src and
+# /public remains in the repository as a backup but is not deployed.
+# =====================================================================
+
 [build]
-  command = "vite build"
-  publish = "dist/client"
-[dev]
-  command = "npm run dev"
-  targetPort = 3000
-  port = 8888
+  # Harmless shell-only command — there is nothing to compile.
+  command = "echo \"Static APRÈS campaign site — no build required\""
+  publish = "site"
+
+# Reasonable global security headers (applied to every path).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Keep the Deer Crest direct-mail page out of search indexes.
+# Applied ONLY to the Deer Crest path — never globally.
+[[headers]]
+  for = "/communities/deer-crest"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/communities/deer-crest/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# NOTE: There is intentionally NO SPA catch-all redirect
+# (no "/* /index.html 200"). These are real static folders with real
+# index.html files served through native directory routing.
